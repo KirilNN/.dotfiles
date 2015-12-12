@@ -1,0 +1,92 @@
+[user]
+	name = KirilNN
+	email = kiril.nikolov@gmail.com
+
+[push]
+  default = tracking
+
+[color]
+  diff = auto
+  status = auto
+  branch = auto
+
+[core]
+  excludesfile = ~/.gitignore
+  autocrlf = false
+  whitespace = cr-at-eol
+  editor = vim
+
+[format]
+  pretty = %Cblue%h%Creset %Cgreen[%cr]%Creset (%an) %s
+
+[alias]
+	c = commit
+  co = checkout
+	a = add
+  d = diff
+  dic = diff --cached
+  ps = push
+	s = status
+  out = log origin..HEAD
+  qpl = log --pretty=\"%Cblue%h%Creset %Cgreen[%cr]%Creset %s\" origin/production..origin/master
+  l = log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cblue%an%Creset' --abbrev-commit --date=relative
+  ci = commit
+  ca = commit --amend
+  eu = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+  au = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+  cp = "!git checkout production && git pull --rebase && git cherry-pick master && git push && git checkout master"
+  cpp = "!f() { git checkout production && git pull --rebase && git cherry-pick $1 && git push && git checkout master ; }; f"
+  current = rev-parse --abbrev-ref HEAD
+  catchup = "!git fetch origin; git rebase origin/master"
+  ctags = !.git/hooks/ctags
+  sync = "!git pl && git push"
+  # Alternate log display from Scott Chacon
+  lol = log --pretty=oneline --abbrev-commit --graph --decorate
+  sub = submodule update --init
+
+  # Other useful aliases:
+  unstage = reset HEAD
+  staged = diff --cached
+  unstaged = diff
+  current-branch = !git symbolic-ref -q HEAD | sed -e 's|^refs/heads/||'
+  # Usage: git track origin/feature-123-login-form
+  track = checkout -t
+
+  #############################
+  # public/private mirrors aliases
+  #############################
+
+	# cherry-pick from ... to ...
+    cpf2 = "!f() { git checkout $2 && git pull --rebase && git cherry-pick $1 && git push && git checkout $1 ; }; f"
+
+    # cherry-pick from current to ....
+    cp2 = "!f() { git cpf2 `git current` $1 ; }; f"
+	
+  pl-tags = "!git fetch core --tags && git fetch origin --tags"
+  pl = "!git pl-tags && git fetch --prune && git rebase --preserve-merges `git rev-parse --abbrev-ref --symbolic-full-name @{u}`"
+
+  # Bring alias from public repo to private
+  put-in-master = "!git checkout master && git pull --rebase && git cherry-pick core/master && git push && git checkout core-master"
+
+  # use this when cherry picking from private to public
+  drop-deleted-by-us = "!git rm `git status --porcelain | grep ^DU | cut -d' ' -f2`"
+
+  # do this after all commits are ported from public to private
+  update-core-tag = "!git tag -f r-private core/master && git push -f core r-private;"
+
+  # do this after all commits are ported from private to public
+  update-master-tag = "!git tag -f r-public origin/master && git push -f origin r-public;"
+
+  update-tags = "!git update-core-tag && git update-master-tag"
+
+  # skip a cherry-pick when in progres
+  skip-cherry = "!git reset; git cherry-pick --continue"
+	pl = pull
+	p = pull
+
+[branch]
+  autosetuprebase = always
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
